@@ -1,0 +1,10 @@
+import React, { useEffect, useState } from 'react';
+import { X, Sparkles, Save, Plus  } from 'lucide-react';
+export default function CardModal({ initialCard, onClose, onSave }) {
+  const [title, setTitle] = useState(initialCard?.title ?? '');
+  const [description, setDescription] = useState(initialCard?.description ?? '');
+  const [error, setError] = useState('');
+  useEffect(() => { const key = e => { if (e.key === 'Escape') onClose(); }; window.addEventListener('keydown', key); return () => window.removeEventListener('keydown', key); }, [onClose]);
+  function submit(e) { e.preventDefault(); if (!title.trim()) { setError('Please enter a title.'); return; } onSave({ title: title.trim(), description: description.trim() }); }
+  return <div className="backdrop" onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }}><section className="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div className="modal-top-accent"/><div className="modal-head"><div><div className="modal-kicker"><Sparkles size={13}/> TASK DETAILS</div><h2 id="modal-title">{initialCard ? 'Edit your task' : 'Create a task'}</h2><p>Small steps make great progress.</p></div><button className="icon" aria-label="Close dialog" onClick={onClose}><X size={18}/></button></div><form onSubmit={submit}><label htmlFor="title">Task title <b>*</b></label><input id="title" autoFocus maxLength={120} value={title} onChange={e => { setTitle(e.target.value); setError(''); }} placeholder="What needs to get done?"/><label htmlFor="description">Description <span className="optional-label">OPTIONAL</span></label><textarea id="description" rows="4" maxLength={2000} value={description} onChange={e => setDescription(e.target.value)} placeholder="Add a few details to make the task clear..."/>{error && <p className="error">{error}</p>}<div className="modal-actions"><button type="button" className="btn secondary" onClick={onClose}>Cancel</button><button className="btn primary"><Plus size={16}/>{initialCard ? 'Save changes' : 'Create task'}</button></div></form></section></div>;
+}
